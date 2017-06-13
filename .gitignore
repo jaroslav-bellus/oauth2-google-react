@@ -6,6 +6,10 @@
 *.iws
 .idea
 
+# config
+/server/conf/config.json
+/server/conf/client_id.json
+
 # dependencies
 /node_modules
 

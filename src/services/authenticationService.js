@@ -1,11 +1,19 @@
+const host = 'http://localhost:9000';
+const loginUrl = `${host}/auth/login`;
+const logoutUrl = `${host}/auth/logout`;
+
 export const authenticationService = {
     isAuthenticated: false,
-    authenticate(cb) {
-        this.isAuthenticated = true
-        setTimeout(cb, 100) // fake async
+    authenticate() {
+        fetch(loginUrl)
+            .then((response) => {
+                return this.isAuthenticated = true;
+            });
     },
     signout(cb) {
-        this.isAuthenticated = false
-        setTimeout(cb, 100)
+        fetch(logoutUrl)
+            .then((response) => {
+                return this.isAuthenticated = false;
+            });
     }
 }

@@ -4,7 +4,12 @@
   "private": true,
   "dependencies": {
     "express": "^4.15.3",
+    "express-session": "^1.15.3",
     "morgan": "^1.8.2",
+    "nconf": "^0.8.4",
+    "passport": "^0.3.2",
+    "passport-google-oauth20": "^1.0.0",
+    "path": "^0.12.7",
     "react": "^15.5.4",
     "react-dom": "^15.5.4",
     "react-router-dom": "^4.1.1"
@@ -17,5 +22,6 @@
     "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject"
-  }
+  },
+  "proxy": "http://localhost:9000"
 }

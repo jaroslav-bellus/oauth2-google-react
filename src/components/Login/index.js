@@ -15,6 +15,8 @@ export class Login extends Component {
         })
     }
 
+    loginUrl = 'http://localhost:9000/auth/login';
+
     render() {
         const { from } = this.props.location.state || {from: {pathname: '/'}}
         const { redirectToReferrer } = this.state
@@ -29,6 +31,7 @@ export class Login extends Component {
             <div>
                 <p>You must log in to view the page at {from.pathname}</p>
                 <button onClick={this.login}>Log in</button>
+                <a href={this.loginUrl}>Log in</a>
             </div>
         )
     }
