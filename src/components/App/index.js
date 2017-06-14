@@ -9,10 +9,60 @@ import {
     withRouter
 } from 'react-router-dom';
 import {Login} from '../Login/index.js';
-import {authenticationService} from './../../services/authenticationService.js';
+import {dummyService} from './../../services/dummyService.js';
+import {Config} from './../../constants/config.js';
 
-const Public = () => <h3>Public</h3>
-const Protected = () => <h3>Protected</h3>
+export class Home extends Component {
+    render() {
+        return (
+            <div>
+                <h3>Main Page</h3>
+                <a href={Config.logoutUrl}>Logout</a>
+                <Router>
+                    <ul>
+                        <li><Link to="/home/page-1">Page 1</Link></li>
+                        <li><Link to="/home/page-2">Page 2</Link></li>
+                        <Route path="/home/page-1" component={Page1}/>
+                        <Route path="/home/page-2" component={Page2}/>
+                    </ul>
+                </Router>
+            </div>
+        );
+    }
+}
+
+class Page1 extends Component {
+    constructor() {
+        super();
+        this.state = {
+            data: [],
+        }
+    }
+
+    componentWillMount() {
+        dummyService.list()
+            .then(response => {
+                this.setState({
+                    data: response.data || [],
+                });
+            })
+    }
+
+    render() {
+        const items = this.state.data
+            .map((post) =>
+                <div>{post.name}</div>
+            );
+
+        return (
+            <div>
+                <h4>Dummy Data</h4>
+                { items }
+            </div>
+        );
+    }
+}
+const Page2 = () => <h3>Page 2</h3>
 
 export class App extends Component {
     render() {
@@ -20,18 +70,12 @@ export class App extends Component {
             <div className="App">
                 <div className="App-header">
                     <img src={logo} className="App-logo" alt="logo"/>
-                    <h2>Welcome to React</h2>
+                    <h2>Welcome</h2>
                 </div>
                 <Router>
                     <div className="App-intro">
-                        <AuthButton/>
-                        <ul>
-                            <li><Link to="/public">Public Page</Link></li>
-                            <li><Link to="/protected">Protected Page</Link></li>
-                        </ul>
-                        <Route path="/public" component={Public}/>
+                        <Route path="/home" component={Home}/>
                         <Route path="/login" component={Login}/>
-                        <PrivateRoute path="/protected" component={Protected}/>
                     </div>
                 </Router>
             </div>
@@ -39,34 +83,3 @@ export class App extends Component {
     }
 }
 
-const AuthButton = withRouter(({ history }) => (
-    authenticationService.isAuthenticated ? (
-        <p>
-            Welcome!
-            <button
-                onClick={() => {
-                    authenticationService.signout(() => history.push('/'))
-                }}
-            >Sign out
-            </button>
-        </p>
-    ) : (
-        <p>You are not logged in.</p>
-    )
-))
-
-const PrivateRoute = ({ component: Component, ...rest }) => (
-    <Route
-        {...rest}
-        render={props => (authenticationService.isAuthenticated ? (
-            <Component {...props}/>
-        ) : (
-            <Redirect
-                to={{
-                        pathname: '/login',
-                        state: { from: props.location }
-                   }}
-           />
-    )
-  )}/>
-)

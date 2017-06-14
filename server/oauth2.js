@@ -54,17 +54,8 @@ const router = express.Router();
 function authRequired (req, res, next) {
     if (!req.user) {
         req.session.oauth2return = req.originalUrl;
-        return res.redirect('/auth/login');
+        return res.redirect('/login');
     }
-    next();
-}
-
-// Middleware that exposes the user's profile as well as login/logout URLs to
-// any templates. These are available as `profile`, `login`, and `logout`.
-function addTemplateVariables (req, res, next) {
-    res.locals.profile = req.user;
-    res.locals.login = `/auth/login?return=${encodeURIComponent(req.originalUrl)}`;
-    res.locals.logout = `/auth/logout?return=${encodeURIComponent(req.originalUrl)}`;
     next();
 }
 // [END middleware]
@@ -82,8 +73,6 @@ router.get(
     // Save the url of the user's current page so the app can redirect back to
     // it after authorization
     (req, res, next) => {
-        console.log('Ahoj');
-
         if (req.query.return) {
             req.session.oauth2return = req.query.return;
         }
@@ -108,8 +97,6 @@ router.get(
     (req, res) => {
         const redirect = req.session.oauth2return || '/';
 
-        console.log('auth/google/callback', redirect);
-
         delete req.session.oauth2return;
         res.redirect(redirect);
     }
@@ -120,12 +107,11 @@ router.get(
 // This does not revoke any active tokens.
 router.get('/auth/logout', (req, res) => {
     req.logout();
-    res.redirect('/');
+    res.redirect('/login');
 });
 
 module.exports = {
     extractProfile: extractProfile,
     router: router,
     required: authRequired,
-    template: addTemplateVariables
 };

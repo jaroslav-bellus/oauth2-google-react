@@ -7,6 +7,7 @@ const app = express();
 const session = require('express-session');
 const passport = require('passport');
 const config = require('./config');
+const oauth2 = require('./oauth2');
 
 // Setup logger
 app.use(morgan(':remote-addr - :remote-user [:date[clf]] ":method :url HTTP/:http-version" :status :res[content-length] :response-time ms'));
@@ -30,6 +31,11 @@ const sessionConfig = {
 app.use(session(sessionConfig));
 // [END session]
 
+// API
+app.get('/', (req, res) => {
+    res.redirect('/home');
+});
+
 // Serve static assets
 app.use(express.static(path.resolve(__dirname, '..', 'build')));
 
@@ -38,12 +44,15 @@ app.use(passport.initialize());
 app.use(passport.session());
 app.use(require('./oauth2').router);
 
-// API
-app.use('api/dummy', require('./api/dummy'));
+app.use('/api', require('./api/index'));
 
 // Always return the main index.html, so react-router render the route in the client
-//app.get('*', (req, res) => {
-//    res.sendFile(path.resolve(__dirname, '..', 'build', 'index.html'));
-//});
+app.get('/login', (req, res) => {
+    res.sendFile(path.resolve(__dirname, '..', 'build', 'index.html'));
+});
+
+app.get('*', oauth2.required, (req, res) => {
+    res.sendFile(path.resolve(__dirname, '..', 'build', 'index.html'));
+});
 
 module.exports = app;

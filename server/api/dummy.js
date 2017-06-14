@@ -1,15 +1,13 @@
 'use strict';
 
 const express = require('express');
-const oauth2 = require('./../oauth2');
 const router = express.Router();
+const oauth2 = require('./../oauth2');
 
 /**
  * GET /api/dummy
- *
- * Retrieve a page of books (up to ten at a time).
  */
-router.get('/dummy', oauth2.required, (req, res, next) => {
+router.get('/', oauth2.required, (req, res, next) => {
     res.json({
         data: [
             {id: '1', name: 'dummy-1'},
