@@ -1,7 +1,6 @@
 {
-  "name": "vroozi-administrado",
+  "name": "oauth2-google-react",
   "version": "0.1.0",
-  "private": true,
   "dependencies": {
     "express": "^4.15.3",
     "express-session": "^1.15.3",
@@ -23,5 +22,10 @@
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject"
   },
+  "author": "Jaroslav Bellus",
+  "contributors": [
+    "Jaroslav Bellus <jaroslav.bellus@gmail.com>"
+  ],
+  "license": "MIT",
   "proxy": "http://localhost:9000"
 }
