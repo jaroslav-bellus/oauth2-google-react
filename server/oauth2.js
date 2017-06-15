@@ -13,10 +13,18 @@ function extractProfile (profile) {
         imageUrl = profile.photos[0].value;
     }
     return {
+        isAuthorized: isProfileAuthorized(profile),
         id: profile.id,
         displayName: profile.displayName,
         image: imageUrl
     };
+}
+
+function isProfileAuthorized(profile) {
+    return (
+        profile._json.domain === config.get('AUTHORIZED_DOMAIN')
+        && profile.emails.some(emailInfo => ~config.get('AUTHORIZED_EMAILS').indexOf(emailInfo.value))
+    );
 }
 
 // Configure the Google strategy for use by Passport.js.
@@ -51,10 +59,17 @@ const router = express.Router();
 // Middleware that requires the user to be logged in. If the user is not logged
 // in, it will redirect the user to authorize the application and then return
 // them to the original URL they requested.
-function authRequired (req, res, next) {
+function isAuthenticated (req, res, next) {
     if (!req.user) {
         req.session.oauth2return = req.originalUrl;
         return res.redirect('/login');
+    }
+    next();
+}
+
+function isAuthorized(req, res, next) {
+    if (!req.user.isAuthorized) {
+        return res.sendStatus(403);
     }
     next();
 }
@@ -80,7 +95,7 @@ router.get(
     },
 
     // Start OAuth 2 flow using Passport.js
-    passport.authenticate('google', { scope: ['email', 'profile'] })
+    passport.authenticate('google', { scope: config.get('OAUTH2_SCOPES') })
 );
 // [END authorize]
 
@@ -113,5 +128,9 @@ router.get('/auth/logout', (req, res) => {
 module.exports = {
     extractProfile: extractProfile,
     router: router,
-    required: authRequired,
+    required: (req, res, next) => {
+        isAuthenticated(req, res, () => {
+            isAuthorized(req, res, next);
+        });
+    },
 };
